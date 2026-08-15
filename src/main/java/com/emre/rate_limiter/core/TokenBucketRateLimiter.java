@@ -53,8 +53,8 @@ public class TokenBucketRateLimiter implements RateLimiter {
                         long newTokensToFill = (elapsedTimeMillis * refillRatePerSecond) / 1000;
 
                         if (newTokensToFill > 0) {
-                            Math.min(maxCap, currentTokens.get() + newTokensToFill);
-                            currentTokens.set(newTokensToFill);
+                            long tokens = Math.min(maxCap, currentTokens.get() + newTokensToFill);
+                            currentTokens.set(tokens);
                             lastRefillTime = now;
                         }
                     }
