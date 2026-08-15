@@ -38,12 +38,13 @@ public class TokenBucketRateLimiter implements RateLimiter {
 
     }
 
-    public void refill() {
+    private void refill() {
         long now = System.currentTimeMillis();
         {
             if (now <= lastRefillTime) {
                 return;
-            } else if (lock.tryLock()) {
+            }
+            if (lock.tryLock()) {
                 try {
                     if (now > lastRefillTime) {
                         //time is elapsed since the filling bucket, refill
