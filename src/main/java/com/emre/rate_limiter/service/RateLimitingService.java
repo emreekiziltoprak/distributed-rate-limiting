@@ -2,6 +2,7 @@ package com.emre.rate_limiter.service;
 
 
 import com.emre.rate_limiter.core.RateLimiter;
+import com.emre.rate_limiter.core.TokenBucketRateLimiter;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class RateLimitingService {
 
-    private final Map limiters = new ConcurrentHashMap<>();
+    private final Map<String, RateLimiter> limiters = new ConcurrentHashMap<>();
 
 
     private static final long BUCKET_CAPACITY = 10;
@@ -23,6 +24,11 @@ public class RateLimitingService {
     * @return If rate isn't exceeded true, else false
     * */
     public boolean allowRequest(String clientId){
-        RateLimiter limiter = limiters.
+        RateLimiter limiter = limiters.computeIfAbsent(clientId, this::createNewBucket);
+        return limiter.tryConsume();
+    }
+
+    private RateLimiter createNewBucket(String clientId){
+    return new TokenBucketRateLimiter(BUCKET_CAPACITY, REFILL_RATE);
     }
 }
